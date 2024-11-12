@@ -43,12 +43,21 @@ def extraer_datos_word(ruta_archivo):
             datos["fecha_comite"] = texto.split("fecha de comite:")[1].strip() if "fecha de comite:" in texto else texto.split("fecha de comité:")[1].strip()
             #convertir de 8/12/22 a 2022-12-08
             datos["fecha_comite"] = datos["fecha_comite"].replace("/", "-")
-        elif "fecha de aprobacion:" in texto:
-            datos["fecha_aprobacion"] = texto.split("fecha de aprobacion:")[1].strip()
+            #reformat from 12-12-22 to 2022-12-12
+            datos["fecha_comite"] = datos["fecha_comite"][6:] + "-" + datos["fecha_comite"][3:5] + "-" + datos["fecha_comite"][:2]
+
+        elif "fecha de aprobacion:" in texto or "fecha de aprobación:" in texto:
+            datos["fecha_aprobacion"] = texto.split("fecha de aprobacion:")[1].strip() if "fecha de aprobacion:" in texto else texto.split("fecha de aprobación:")[1].strip()
             datos["fecha_aprobacion"] = datos["fecha_aprobacion"].replace("/", "-")
-        elif "fecha de esembolso:" in texto:
+            #reformat from 12-12-22 to 2022-12-12
+            datos["fecha_aprobacion"] = datos["fecha_aprobacion"][6:] + "-" + datos["fecha_aprobacion"][3:5] + "-" + datos["fecha_aprobacion"][:2]
+
+        elif "fecha de desembolso:" in texto:
             datos["fecha_desembolso"] = texto.split("fecha de desembolso:")[1].strip()
             datos["fecha_desembolso"] = datos["fecha_desembolso"].replace("/", "-")
+            #reformat from 12-12-22 to 2022-12-12
+            datos["fecha_desembolso"] = datos["fecha_desembolso"][6:] + "-" + datos["fecha_desembolso"][3:5] + "-" + datos["fecha_desembolso"][:2]
+            
         elif "monto aprobado:" in texto:
             datos["monto_aprobado"] = texto.split("monto aprobado:")[1].strip()
             #convertir a float y limpiar signo de dollar
