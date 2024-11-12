@@ -66,42 +66,60 @@ def extraer_datos_word(ruta_archivo):
                 datos["forma_pago"] = 5
             else:
                 datos["forma_pago"] = 0
+
         elif "cuota:" in texto:
             datos["cuota"] = texto.split("cuota:")[1].strip()
+
         elif "no. de cuotas:" in texto:
             datos["no. de cuotas"] = texto.split("no. de cuotas:")[1].strip()
+
         elif "destino:" in texto:
             datos["destino"] = texto.split("destino:")[1].strip()
-        elif "asesoria financiera:" in texto:
-            datos["asesoria financiera"] = texto.split("asesoria financiera:")[1].strip()
+
+        elif "asesoría financiera:" in texto:
+            datos["asesoria_financiera"] = texto.split("asesoría financiera:")[1].strip()
+            datos["asesoria_financiera"] = float(re.sub(r'[^\d.]', '', datos["asesoria_financiera"]))
+
         elif "iva:" in texto:
             datos["iva"] = texto.split("iva:")[1].strip()
             #limpiar signo de dollar y convertirlo en float
             datos["iva"] = float(re.sub(r'[^\d.]', '', datos["iva"]))
+
         elif "seguro de vida-deuda:" in texto:
             datos["seguro_vida"] = texto.split("seguro de vida-deuda:")[1].strip()
             #limpiar signo de dollar y convertirlo en float
             datos["seguro_vida"] = float(re.sub(r'[^\d.]', '', datos["seguro_vida"]))
+
         elif "gastos notariales:" in texto:
             datos["gastos_notariales"] = texto.split("gastos notariales:")[1].strip()
             datos["gastos_notariales"] = float(re.sub(r'[^\d.]', '', datos["gastos_notariales"]))
+
         elif "gastos registrales:" in texto:
             datos["gastos_registrales"] = texto.split("gastos registrales:")[1].strip()
             datos["gastos_registrales"] = float(re.sub(r'[^\d.]', '', datos["gastos_registrales"]))
+            
         elif "otros:" in texto:
             datos["otros"] = texto.split("otros:")[1].strip()
             datos["otros"] = float(re.sub(r'[^\d.]', '', datos["otros"]))
-        elif "cancelacion credito anterior:" in texto:
-            datos["cancelacion_saldo"] = texto.split("cancelacion credito anterior:")[1].strip()
+
+        elif "cancelacion credito anterior:" in texto or "cancelación credito anterior:" in texto or "cancelación crédito anterior:" in texto:
+            datos["cancelacion_saldo"] = texto.split("cancelacion credito anterior:")[1].strip() if "cancelacion credito anterior:" in texto else texto.split("cancelación credito anterior:")[1].strip() if "cancelación credito anterior:" in texto else texto.split("cancelación crédito anterior:")[1].strip()
             datos["cancelacion_saldo"] = float(re.sub(r'[^\d.]', '', datos["cancelacion_saldo"]))
-        elif "nº credito anterior:" in texto:
-            datos["n_credito_cancelar"] = texto.split("nº credito anterior:")[1].strip()
-            datos["n_credito_cancelar"] = int(re.sub(r'[^\d.]', '', datos["n_credito_cancelar"]))
-        elif "total de descuentos:" in texto:
-            datos["total_descuentos"] = texto.split("total de descuentos:")[1].strip()
+
+        elif "nº credito a cancelar:" in texto or "nº crédito a cancelar:" in texto:
+            datos["n_credito_cancelar"] = texto.split("nº credito a cancelar:")[1].strip() if "nº credito a cancelar:" in texto else texto.split("nº crédito a cancelar:")[1].strip()
+            #remover .
+            datos["n_credito_cancelar"] = re.sub(r'[^\d.]', '', datos["n_credito_cancelar"])
+            datos["n_credito_cancelar"] = datos["n_credito_cancelar"].replace(".", "")
+
+            
+
+        elif "total descuentos:" in texto:
+            datos["total_descuentos"] = texto.split("total descuentos:")[1].strip()
             datos["total_descuentos"] = float(re.sub(r'[^\d.]', '', datos["total_descuentos"]))
-        elif "total entregar al cliente:" in texto:
-            datos["desembolso_cliente"] = texto.split("total entregar al cliente:")[1].strip()
+            
+        elif "total a entregar al cliente:" in texto:
+            datos["desembolso_cliente"] = texto.split("total a entregar al cliente:")[1].strip()
             datos["desembolso_cliente"] = float(re.sub(r'[^\d.]', '', datos["desembolso_cliente"]))
         else:
             print(f"Texto no reconocido: {texto}")
@@ -136,9 +154,9 @@ def extraer_datos_excel(ruta_archivo):
         datos['valor_cuota'] = hoja.cell(row=8, column=3).value
         #si la celda tiene el valor de Seguro devolver tr
         if(hoja.cell(row=7, column=6).value == "Seguro"):
-            datos['seguro'] = True
+            datos['seguro'] = 1
         else:
-            datos['seguro'] = False
+            datos['seguro'] = 0
 
         verde = 'FFC6E0B4'
         amarillo = 'FFFFFF00'
