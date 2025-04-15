@@ -160,7 +160,7 @@ def extraer_datos_excel(ruta_archivo):
             datos['periodo'] = 0
         
         datos['plazo'] = int(hoja.cell(row=5, column=2).value.split(" ")[1])
-        datos['valor_cuota'] = hoja.cell(row=8, column=3).value
+        datos['valor_cuota'] = hoja.cell(row=9, column=3).value
         #si la celda tiene el valor de Seguro devolver tr
         if(hoja.cell(row=7, column=6).value == "Seguro"):
             datos['seguro'] = 1
@@ -252,8 +252,4 @@ with open(ruta_json, 'w', encoding='utf-8') as archivo_json:
 
 print(f"Datos guardados en {ruta_json}")
 
-for cliente, datos in datos_por_cliente:
-    print(f"Cliente: {cliente}")
-    for clave, valor in datos.items():
-        print(f"  {clave}: {valor}")
-    print()
+
