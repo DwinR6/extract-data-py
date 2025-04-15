@@ -47,7 +47,7 @@ def generate_sql_insert(json_data):
 
         # Insert for loans table
         insert_loans = f"""
-        INSERT INTO loans (loan_id, loan_number, loan_application_id, destination_id, approval_date, outlay_date, due_date, last_payment_date, next_payment_date, balance, status) VALUES ({get_value(datos, 'n_credito', 'NULL')}, LPAD({get_value(datos, 'n_credito', 'NULL')}, 9, '0'), {get_value(datos, 'n_credito', 'NULL')}, 1, '{get_value(datos, 'fecha_aprobacion', 'NULL')}', '{get_value(datos, 'fecha_desembolso', 'NULL')}', NULL, '{get_value(datos, 'ultima_fecha_pago', 'NULL')}', NULL, {get_value(datos, 'saldo', 'NULL')}, 'in_progress');"""
+        INSERT INTO loans (loan_id, loan_number, loan_application_id, destination_id, approval_date, outlay_date, due_date, last_payment_date, next_payment_date, balance, status) VALUES ({get_value(datos, 'n_credito', 'NULL')}, LPAD({get_value(datos, 'n_credito', 'NULL')}, 9, '0'), {get_value(datos, 'n_credito', 'NULL')}, 1, '{get_value(datos, 'fecha_aprobacion', 'NULL')}', '{get_value(datos, 'fecha_desembolso', 'NULL')}', NULL, '{get_value(datos, 'ultima_fecha_pago', get_value(datos, 'fecha_desembolso', 'NULL'))}', NULL, {get_value(datos, 'saldo', get_value(datos, 'monto', 'NULL'))}, 'in_progress');"""
         sql_statements.append(insert_loans)
 
         # Insert for loan_deductions table
@@ -62,15 +62,20 @@ def generate_sql_insert(json_data):
 
         # Insert for amortizations table, of App\Models\Loan
         insert_amortizations = f"""
-        INSERT INTO amortizations (amortization_id, amortizationable_id, amortizationable_type, date, amount, term, interest_rate, include_iva, include_insurance, payment, payment_frequency_id, amortization_method_id, last_payment_date)  VALUES ( NULL, {get_value(datos,'n_credito','NULL')},  'App\\\\Models\\\\Loan',  '{get_value(datos, 'fecha_desembolso', 'NULL')}',  {get_value(datos, 'monto_aprobado', get_value(datos, 'monto', '0'))},  {get_value(datos, 'plazo', '12')},  {get_value(datos, 'interes', '0')}, {get_value(datos, 'iva', 'NULL')}, '{get_value(datos, 'seguro', '0')}', {get_value(datos, 'valor_cuota', '0')}, {get_value(datos, 'forma_pago', get_value(datos, 'periodo', '1'))}, 2, '{get_value(datos, 'ultima_fecha_pago', 'NULL')}');"""
+        INSERT INTO amortizations (amortization_id, amortizationable_id, amortizationable_type, date, amount, term, interest_rate, include_iva, include_insurance, payment, payment_frequency_id, amortization_method_id, last_payment_date)  VALUES ( NULL, {get_value(datos,'n_credito','NULL')},  'App\\\\Models\\\\Loans\\\\LoanModel',  '{get_value(datos, 'fecha_desembolso', 'NULL')}',  {get_value(datos, 'monto_aprobado', get_value(datos, 'monto', '0'))},  {get_value(datos, 'plazo', '12')},  {get_value(datos, 'interes', '0')}, {get_value(datos, 'iva', 'NULL')}, '{get_value(datos, 'seguro', '0')}', {get_value(datos, 'valor_cuota', '0')}, {get_value(datos, 'forma_pago', get_value(datos, 'periodo', '1'))}, 2, '{get_value(datos, 'ultima_fecha_pago', 'NULL')}');"""
         sql_statements.append(insert_amortizations)
 
         # Insert for amortizations table, of App\Models\LoanApplication
         insert_amortizations_loan_application = f"""
-        INSERT INTO amortizations (amortization_id, amortizationable_id, amortizationable_type, date, amount, term, interest_rate, include_iva, include_insurance, payment, payment_frequency_id, amortization_method_id, last_payment_date) VALUES ( NULL, {get_value(datos,'n_credito','NULL')}, 'App\\\\Models\\\\LoanApplication', '{get_value(datos, 'fecha_desembolso', 'NULL')}', {get_value(datos, 'monto_aprobado', get_value(datos, 'monto', '0'))}, {get_value(datos, 'plazo', '12')}, {get_value(datos, 'interes', '0')}, {get_value(datos, 'iva', 'NULL')}, {get_value(datos, 'seguro', '0')}, {get_value(datos, 'valor_cuota', '0')}, {get_value(datos, 'forma_pago', get_value(datos, 'forma_pago', '1'))}, 2, '{get_value(datos, 'ultima_fecha_pago', 'NULL')}');"""
+        INSERT INTO amortizations (amortization_id, amortizationable_id, amortizationable_type, date, amount, term, interest_rate, include_iva, include_insurance, payment, payment_frequency_id, amortization_method_id, last_payment_date) VALUES ( NULL, {get_value(datos,'n_credito','NULL')}, 'App\\\\Models\\\\Loans\\\\LoanApplicationModel', '{get_value(datos, 'fecha_desembolso', 'NULL')}', {get_value(datos, 'monto_aprobado', get_value(datos, 'monto', '0'))}, {get_value(datos, 'plazo', '12')}, {get_value(datos, 'interes', '0')}, {get_value(datos, 'iva', 'NULL')}, {get_value(datos, 'seguro', '0')}, {get_value(datos, 'valor_cuota', '0')}, {get_value(datos, 'forma_pago', get_value(datos, 'forma_pago', '1'))}, 2, '{get_value(datos, 'ultima_fecha_pago', 'NULL')}');"""
 
         
         sql_statements.append(insert_amortizations_loan_application)
+
+        insert_disbursements = f"""
+        INSERT INTO disbursements (disbursement_id, loan_id, disbursement_date, 
+        VALUES ({get_value(datos, 'n_credito', 'NULL')}, {get_value(datos, 'n_credito', 'NULL')}, '{get_value(datos, 'fecha_desembolso', 'NULL')}', {get_value(datos, 'desembolso_cliente', '0')}, 'cash', 'completed');"""
+        sql_statements.append(insert_disbursements)
 
         sql_statements.append('\n')
 
