@@ -41,7 +41,8 @@ def detect_type(values):
         return "TEXT"
 
 # Carpeta que contiene los archivos DBF
-DBF_FOLDER = "ruta/a/tu/carpeta_dbf"
+DBF_FOLDER = r"C:\Users\E_noe\Repos\Aspescu data"
+
 OUTPUT_SQL = "dump_mysql.sql"
 
 with open(OUTPUT_SQL, "w", encoding="utf-8") as out_sql:
