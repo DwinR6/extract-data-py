@@ -25,13 +25,18 @@ with open(output_file, "w", encoding="utf-8") as f:
         linea_cred = row["linea_cre"]
 
         # Consulta UPDATE
-        f.write(f"UPDATE loan_application SET infored_category = '{linea_cred}' WHERE loan_id = {loan_id};\n")
-
+        f.write(
+            "UPDATE loan_applications "
+            f"SET infored_category = '{linea_cred}' "
+            f"WHERE loan_application_id = (SELECT loan_application_id FROM loans WHERE loan_id = {loan_id});\n"
+        )
         # Consulta INSERT
+        last_payment_date = "NULL" if pd.isna(row['utl_pag']) else f"'{row['utl_pag']}'"
         f.write(
             "INSERT INTO infored_statements (year, month, loan_id, balance, penalty_amount, classification, penalty_days, last_payment_date, day, status) "
             f"VALUES ({row['ano']}, {row['mes']}, {loan_id}, {row['saldo']}, {row['mora']}, '{row['calif_actual']}', "
-            f"{row['dias_mora']}, '{row['utl_pag']}', {row['dia_reporte']}, '{row['est_credito']}');\n\n"
+            f"{row['dias_mora']}, {last_payment_date}, {row['dia_reporte']}, '{row['est_credito']}');\n\n"
         )
 
 print(f"✅ Consultas generadas correctamente en '{output_file}'")
+    
